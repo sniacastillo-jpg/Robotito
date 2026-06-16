@@ -16,12 +16,12 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Falta el campo "prompt" en el cuerpo de la petición.' });
     }
 
-    // El token se lee de las variables de entorno de Vercel — ¡nunca está en el código!
-    const hfToken = process.env.HUGGINGFACE_TOKEN;
+    // El token se lee de la variable "geminiapikey" que ya está en Vercel
+    const hfToken = process.env.geminiapikey;
 
     if (!hfToken) {
-        console.error('ERROR: La variable de entorno HUGGINGFACE_TOKEN no está configurada en Vercel.');
-        return res.status(500).json({ error: 'El servidor no tiene el token de Hugging Face configurado.' });
+        console.error('ERROR: La variable de entorno geminiapikey no está configurada en Vercel.');
+        return res.status(500).json({ error: 'El servidor no tiene el token configurado.' });
     }
 
     const HF_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';

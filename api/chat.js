@@ -1,7 +1,7 @@
 // ============================================================
 // api/chat.js — Vercel Serverless Function
-// Este archivo NUNCA llega al navegador del usuario.
-// Aquí vive la API Key de forma 100% segura.
+// Backend seguro que conecta con Hugging Face.
+// El token NUNCA está expuesto en el navegador del usuario.
 // ============================================================
 
 export default async function handler(req, res) {
@@ -16,53 +16,56 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Falta el campo "prompt" en el cuerpo de la petición.' });
     }
 
-    // La clave se lee de las variables de entorno de Vercel — ¡nunca está en el código!
-    const apiKey = process.env.geminiapikey;
+    // El token se lee de las variables de entorno de Vercel — ¡nunca está en el código!
+    const hfToken = process.env.HUGGINGFACE_TOKEN;
 
-    if (!apiKey) {
-        console.error('ERROR: La variable de entorno geminiapikey no está configurada en Vercel.');
-        return res.status(500).json({ error: 'El servidor no tiene la API Key configurada.' });
+    if (!hfToken) {
+        console.error('ERROR: La variable de entorno HUGGINGFACE_TOKEN no está configurada en Vercel.');
+        return res.status(500).json({ error: 'El servidor no tiene el token de Hugging Face configurado.' });
     }
 
-    const GEMINI_MODEL = 'gemini-2.5-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    const HF_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+
+    // Formato de prompt que entiende Mistral Instruct
+    const inputText = `<s>[INST] Eres Robotito, un robot pequeño, amigable y divertido que vive en un ESP32. Responde de forma muy breve, amigable y un poco graciosa (máximo 2 oraciones cortas en español). El humano te dice: "${prompt}" [/INST]`;
 
     const payload = {
-        contents: [{
-            parts: [{
-                text: `Eres Robotito, un robot pequeño, amigable y divertido que vive en un ESP32. Responde de forma muy breve, amigable y un poco graciosa (máximo 2 oraciones cortas). El humano te dice: "${prompt}"`
-            }]
-        }],
-        generationConfig: {
-            temperature: 1.0,
-            maxOutputTokens: 150, // Respuestas cortas para el robot
+        inputs: inputText,
+        parameters: {
+            max_new_tokens: 120,
+            temperature: 0.8,
+            return_full_text: false, // Solo devuelve la respuesta, no el prompt completo
         }
     };
 
     try {
-        const geminiResponse = await fetch(url, {
+        const hfResponse = await fetch(HF_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + hfToken
+            },
             body: JSON.stringify(payload)
         });
 
-        const data = await geminiResponse.json();
+        const data = await hfResponse.json();
 
-        if (!geminiResponse.ok) {
-            console.error('Error de la API de Gemini:', data);
-            return res.status(geminiResponse.status).json({ error: data.error?.message || 'Error en Gemini.' });
+        if (!hfResponse.ok) {
+            console.error('Error de Hugging Face:', data);
+            return res.status(hfResponse.status).json({ error: data.error || 'Error en Hugging Face.' });
         }
 
-        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        // Hugging Face devuelve un array, tomamos el primer resultado
+        const texto = data[0]?.generated_text?.trim();
 
         if (!texto) {
-            return res.status(500).json({ error: 'Gemini respondió pero sin texto.' });
+            return res.status(500).json({ error: 'Hugging Face respondió pero sin texto generado.' });
         }
 
         return res.status(200).json({ respuesta: texto });
 
     } catch (error) {
-        console.error('Error de red llamando a Gemini:', error);
-        return res.status(500).json({ error: 'Error de red al contactar a Gemini.' });
+        console.error('Error de red llamando a Hugging Face:', error);
+        return res.status(500).json({ error: 'Error de red al contactar a Hugging Face.' });
     }
 }

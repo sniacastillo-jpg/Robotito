@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotito - Control Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_gemini.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">🤖</div>
+            <h1>Robotito</h1>
+            <p>Panel de Control & Reacción de Voz</p>
+        </header>
+
+        <main>
+            <section class="card glass">
+                <div class="status-header">
+                    <h2>Conexión Bluetooth</h2>
+                    <div id="connectionStatus" class="badge red">Desconectado</div>
+                </div>
+                <button id="connectBtn" class="btn primary">
+                    <span class="icon">🔌</span> Conectar a RobotitoBLE
+                </button>
+            </section>
+
+            <section class="card glass">
+                <div class="status-header">
+                    <h2>🧠 Inteligencia Artificial (Gemini)</h2>
+                </div>
+                <p class="subtitle">¡Habla con Robotito! Él usará Gemini para pensar y te responderá hablando. 🔒 La clave está protegida en el servidor.</p>
+
+                <div class="chat-box">
+                    <p class="chat-msg"><strong>Tú:</strong> <span id="userText" class="text-muted">...</span></p>
+                    <p class="chat-msg"><strong>Robotito:</strong> <span id="iaText" class="text-muted">...</span></p>
+                </div>
+
+                <button id="geminiBtn" class="btn primary" style="margin-top: 1rem; background: linear-gradient(90deg, #8b5cf6, #3b82f6);">
+                    <span class="icon">✨</span> Hablar con la IA
+                </button>
+            </section>
+
+            <section class="card glass">
+                <h2>Micrófono (Reacción Básica)</h2>
+                    <div id="micStatus" class="badge yellow">Inactivo</div>
+                </div>
+                <p class="subtitle">Habla por el micrófono de tu PC y Robotito moverá la boca (¡sin hacer ruidos molestos!).</p>
+                <div class="visualizer">
+                    <div class="bar-container">
+                        <div id="volumeBar" class="bar"></div>
+                    </div>
+                </div>
+                <button id="micBtn" class="btn secondary" disabled>
+                    <span class="icon">🎙️</span> Activar Micrófono
+                </button>
+            </section>
+
+            <section class="card glass">
+                <h2>Control Manual (con Sonidos)</h2>
+                <div class="grid">
+                    <button class="btn action-btn" data-cmd="1">😀 Alegre</button>
+                    <button class="btn action-btn" data-cmd="2">😲 Sorprendido</button>
+                    <button class="btn action-btn" data-cmd="3">😨 Asustado</button>
+                    <button class="btn action-btn" data-cmd="4">😡 Enojado</button>
+                    <button class="btn action-btn" data-cmd="5">🤔 Pensando</button>
+                    <button class="btn action-btn" data-cmd="6">😜 Mofas</button>
+                    <button class="btn action-btn" data-cmd="7">🎉 Fiesta</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

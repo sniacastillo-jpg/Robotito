@@ -1,0 +1,10 @@
+{
+  "name": "robotito",
+  "version": "1.0.0",
+  "description": "Página web para controlar Robotito (ESP32) por Bluetooth con IA de Gemini",
+  "main": "index.html",
+  "scripts": {},
+  "keywords": ["robotito", "esp32", "bluetooth", "gemini", "iot"],
+  "author": "Snaider",
+  "license": "MIT"
+}
